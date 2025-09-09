@@ -36,39 +36,38 @@ pipeline {
         }
  
         stage('Commit & Push Changes') {
-            steps {
-                script {
-                    echo 'Checking for changes to push...'
-                    withCredentials([usernamePassword(
-                        credentialsId: 'PAT_Jenkins',
-                        usernameVariable: 'GIT_USER',
-                        passwordVariable: 'GIT_TOKEN')]) {
- 
-                        bat """
-                            git config user.email "jenkins@pipeline.com"
-                            git config user.name "Jenkins CI"
- 
-                            git status
-                            git add .
- 
-                            REM Commit only if there are changes
-                            git diff --cached --quiet || git commit -m "${COMMIT_MESSAGE}"
- 
-                            REM Push using token
-                            
-                             git push https://%GIT_USER%:%GIT_TOKEN%@github.com/Shivanjali-Rakhunde/FinalCapstonProject_SauceDemo.git ${BRANCH_NAME}
-                            
-                        """
-                    }
-                }
+    steps {
+        script {
+            echo 'Checking for changes to push...'
+            withCredentials([usernamePassword(
+                credentialsId: 'PAT_Jenkins',
+                usernameVariable: 'GIT_USER',
+                passwordVariable: 'GIT_TOKEN')]) {
+
+                bat """
+                    "C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe" config user.email "jenkins@pipeline.com"
+                    "C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe" config user.name "Jenkins CI"
+
+                    "C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe" status
+                    "C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe" add .
+
+                    REM Commit only if there are changes
+                    "C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe" diff --cached --quiet || "C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe" commit -m "${COMMIT_MESSAGE}"
+
+                    REM Push using token
+                    "C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe" push https://%GIT_USER%:%GIT_TOKEN%@github.com/Shivanjali-Rakhunde/FinalCapstonProject_SauceDemo.git ${BRANCH_NAME}
+                """
             }
         }
     }
+}
+
+    
  
     post {
         always {
             // Archive screenshots
-            archiveArtifacts artifacts: 'reports/screenshot/*', fingerprint: true
+            archiveArtifacts artifacts: 'test-output/screenshot/*', fingerprint: true
  
             // Publish Cucumber Report
             publishHTML(target: [
