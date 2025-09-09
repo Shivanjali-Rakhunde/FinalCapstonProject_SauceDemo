@@ -5,21 +5,18 @@ pipeline {
         BRANCH_NAME = 'main'
         ECLIPSE_WORKSPACE = 'C:\\Users\\Shivanjali\\OneDrive\\Desktop\\SauceDemoAutomation\\SauceDemoAutomation'
         COMMIT_MESSAGE = 'Jenkins: Auto-commit after build'
-        GIT_REPO = 'https://github.com/Shivanjali-Rakhunde/FinalCapstonProject_SauceDemo.git'
-        GIT_CREDENTIALS_ID = '00a4b0dc-5a83-4bc5-b6ce-6c05579e1bba'
     }
  
-    // Auto-trigger every 5 minutes
+    // Auto-trigger every 5 mins on Git changes
     triggers {
-        pollSCM('H/5 * * * *')
+        pollSCM('* * * * *')
     }
  
     stages {
         stage('Checkout from Git') {
             steps {
                 git branch: "${env.BRANCH_NAME}",
-                    credentialsId: "${env.GIT_CREDENTIALS_ID}",
-                    url: "${env.GIT_REPO}"
+                    url: 'https://github.com/Shivanjali-Rakhunde/FinalCapstonProject_SauceDemo.git'
             }
         }
  
@@ -34,7 +31,7 @@ pipeline {
  
         stage('Build & Test') {
             steps {
-                bat 'mvn clean test -DsuiteXmlFile=SauceDemoAutomation/testng.xml'
+                bat 'mvn clean test -DsuiteXmlFile=testng.xml'
             }
         }
  
@@ -43,13 +40,13 @@ pipeline {
                 script {
                     echo 'Checking for changes to push...'
                     withCredentials([usernamePassword(
-                        credentialsId: "${env.GIT_CREDENTIALS_ID}",
+                        credentialsId: 'PAT_Jenkins',
                         usernameVariable: 'GIT_USER',
                         passwordVariable: 'GIT_TOKEN')]) {
  
                         bat """
-                            git config user.name "Jenkins CI"
                             git config user.email "jenkins@pipeline.com"
+                            git config user.name "Jenkins CI"
  
                             git status
                             git add .
@@ -57,8 +54,10 @@ pipeline {
                             REM Commit only if there are changes
                             git diff --cached --quiet || git commit -m "${COMMIT_MESSAGE}"
  
-                            REM Push to your repo using Jenkins credentials
-                            git push https://%GIT_USER%:%GIT_TOKEN%@github.com/Shivanjali-Rakhunde/FinalCapstonProject_SauceDemo.git ${BRANCH_NAME}
+                            REM Push using token
+                            
+                             git push https://%GIT_USER%:%GIT_TOKEN%@github.com/Shivanjali-Rakhunde/FinalCapstonProject_SauceDemo.git ${BRANCH_NAME}
+                            
                         """
                     }
                 }
@@ -69,7 +68,7 @@ pipeline {
     post {
         always {
             // Archive screenshots
-            archiveArtifacts artifacts: 'SauceDemoAutomation/test-output/screenshot/*', fingerprint: true
+            archiveArtifacts artifacts: 'reports/screenshot/*', fingerprint: true
  
             // Publish Cucumber Report
             publishHTML(target: [
@@ -77,7 +76,7 @@ pipeline {
                 alwaysLinkToLastBuild: true,
                 keepAll: true,
                 reportDir: 'reports/cucumber-reports',
-                reportFiles: 'cucumber-report.html',
+                reportFiles: 'cucumber.html',
                 reportName: 'Cucumber Report'
             ])
  
@@ -87,7 +86,7 @@ pipeline {
                 alwaysLinkToLastBuild: true,
                 keepAll: true,
                 reportDir: 'reports/extent-reports',
-                reportFiles: 'index.html',
+                reportFiles: 'ExtentReport.html',
                 reportName: 'Extent Report'
             ])
         }
