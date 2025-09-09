@@ -1,4 +1,4 @@
-package com.saucedemo.utils;
+/*package com.saucedemo.utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +29,7 @@ public class DriverSetup {
                 default:
                     ChromeOptions options = new ChromeOptions();
 
-                    // ✅ Disable password manager
+                    //  Disable password manager
                     Map<String, Object> prefs = new HashMap<>();
                     prefs.put("credentials_enable_service", false);
                     prefs.put("profile.password_manager_enabled", false);
@@ -49,7 +49,65 @@ public class DriverSetup {
     public static void quitDriver() {
         if (driver.get() != null) {
             driver.get().quit();
-            driver.remove(); // ✅ Clears ThreadLocal to prevent memory leaks
+            driver.remove(); //  Clears ThreadLocal to prevent memory leaks
+        }
+    }
+}*/
+
+
+
+package com.saucedemo.utils;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
+public class DriverSetup {
+
+    
+    private static WebDriver driver;
+
+    public static WebDriver getDriver(String browser) {
+        if (driver == null) {
+            switch (browser.toLowerCase()) {
+                case "firefox":
+                    driver = new FirefoxDriver();
+                    break;
+
+                case "edge":
+                    driver = new EdgeDriver();
+                    break;
+
+                case "chrome":
+                default:
+                    ChromeOptions options = new ChromeOptions();
+
+                    // Disable password manager
+                    Map<String, Object> prefs = new HashMap<>();
+                    prefs.put("credentials_enable_service", false);
+                    prefs.put("profile.password_manager_enabled", false);
+                    options.setExperimentalOption("prefs", prefs);
+
+                    // Incognito mode to avoid caching saved logins
+                    options.addArguments("--incognito");
+
+                    driver = new ChromeDriver(options);
+                    break;
+            }
+        }
+
+        return driver;
+    }
+
+    public static void quitDriver() {
+        if (driver != null) {
+            driver.quit();
+            driver = null; 
         }
     }
 }

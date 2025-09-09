@@ -23,7 +23,7 @@ public class LoginPageTest extends BaseTest {
         Assert.assertTrue(lp.getError().toLowerCase().contains("locked"));
     }
 
-    @Test
+   /* @Test
     public void testUsernameOrPasswordRequiredErrors() {
         LoginPage lp = new LoginPage(driver).navigate();
 
@@ -40,6 +40,34 @@ public class LoginPageTest extends BaseTest {
         Assert.assertTrue(
             isPasswordErrorDisplayed || isUsernameErrorDisplayed,
             "Expected either 'Password is required' or 'Username is required' error to be displayed"
+        );
+    }*/
+    
+    @Test
+    public void testPasswordRequiredError() {
+        LoginPage loginpage = new LoginPage(driver).navigate();
+
+        // Try login with username but no password
+        loginpage.login(DataSet.STANDARD_USER, "");
+        String error = loginpage.getError();
+
+        Assert.assertTrue(
+            error.contains("Password is required"),
+            "Expected 'Password is required' error message"
+        );
+    }
+
+    @Test
+    public void testUsernameRequiredError() {
+        LoginPage loginpage = new LoginPage(driver).navigate();
+
+        // Try login with password but no username
+        loginpage.login("", DataSet.PASSWORD);
+        String error = loginpage.getError();
+
+        Assert.assertTrue(
+            error.contains("Username is required"),
+            "Expected 'Username is required' error message"
         );
     }
 
