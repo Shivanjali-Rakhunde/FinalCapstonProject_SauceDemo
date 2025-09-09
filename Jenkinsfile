@@ -41,7 +41,7 @@ pipeline {
                 script {
                     echo 'Checking for changes to push...'
                     withCredentials([usernamePassword(
-                        credentialsId: 'PAT_Jenkins',
+                        credentialsId: 'PAT_Jenkins1',
                         usernameVariable: 'GIT_USER',
                         passwordVariable: 'GIT_TOKEN')]) {
 

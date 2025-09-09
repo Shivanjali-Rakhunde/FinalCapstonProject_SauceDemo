@@ -3,6 +3,8 @@ package com.saucedemo.pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
+//Login page
+
 public class LoginPage extends BasePage {
     private By username = By.id("user-name");
     private By password = By.id("password");
